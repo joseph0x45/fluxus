@@ -3,7 +3,6 @@ function auth_page() {
     username: "",
     password: "",
     loading: false,
-    action: "login",
     async authenticate() {
       alert("werking")
     }
