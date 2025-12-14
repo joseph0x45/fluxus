@@ -1,5 +1,12 @@
 package models
 
+import "html/template"
+
+type PageData struct {
+	StylesCSS template.CSS
+	Title     string
+}
+
 type User struct {
 	ID       string `json:"id" db:"user"`
 	Username string `json:"username" db:"username"`

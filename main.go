@@ -1,43 +1,53 @@
 package main
 
 import (
-	"context"
+	"embed"
 	"flag"
 	"fluxus/db"
 	"fluxus/handler"
-	"fluxus/ui"
+	"fluxus/models"
 	"html/template"
 	"log"
 	"net/http"
+
+	"github.com/go-chi/chi/v5"
 )
 
-//go:generate tailwindcss -i assets/vendor/input.css -o assets/vendor/styles.css -m
+//go:generate tailwindcss -i static/input.css -o static/styles.css -m
+
+//go:embed templates/*html
+var templatesFS embed.FS
+
+//go:embed static/styles.css
+var stylesCSS template.CSS
+
+//go:embed static/alpine.js
 
 var templates *template.Template
 
 func init() {
-
+	templates = template.Must(template.ParseFS(templatesFS, "templates/*.html"))
 }
+
 func main() {
+	pageData := models.PageData{
+		Title:     "",
+		StylesCSS: stylesCSS,
+	}
 	port := flag.String("port", "8080", "The port to start fluxus on")
 	flag.Parse()
-	mux := http.NewServeMux()
-
-	mux.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request) {
-		ctx := context.Background()
-		ui.Index().Render(ctx, w)
-	})
+	r := chi.NewRouter()
 
 	conn, err := db.GetConn()
 	if err != nil {
 		panic(err)
 	}
 
-	handler := handler.NewHandler(conn)
-	handler.RegisterRoutes(mux)
+	handler := handler.NewHandler(conn, templates, pageData)
+	handler.RegisterRoutes(r)
 	server := http.Server{
 		Addr:    ":" + *port,
-		Handler: mux,
+		Handler: r,
 	}
 	log.Printf("fluxus launched on http://localhost:%s\n", *port)
 	if err := server.ListenAndServe(); err != nil {

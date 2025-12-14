@@ -2,19 +2,29 @@ package handler
 
 import (
 	"fluxus/db"
-	"net/http"
+	"fluxus/models"
+	"html/template"
+
+	"github.com/go-chi/chi/v5"
 )
 
 type Handler struct {
-	conn *db.Conn
+	conn      *db.Conn
+	templates *template.Template
+	pageData  models.PageData
 }
 
-func NewHandler(conn *db.Conn) *Handler {
+func NewHandler(
+	conn *db.Conn, templates *template.Template,
+	pageData models.PageData,
+) *Handler {
 	return &Handler{
-		conn: conn,
+		conn:      conn,
+		templates: templates,
+		pageData: pageData,
 	}
 }
 
-func (h *Handler) RegisterRoutes(mux *http.ServeMux) {
-	mux.HandleFunc("GET /auth/", h.RenderAuthPage)
+func (h *Handler) RegisterRoutes(r chi.Router) {
+	r.Get("/auth", h.RenderAuthPage)
 }
