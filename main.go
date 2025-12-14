@@ -5,7 +5,6 @@ import (
 	"flag"
 	"fluxus/db"
 	"fluxus/handler"
-	"fluxus/models"
 	"html/template"
 	"log"
 	"net/http"
@@ -22,18 +21,16 @@ var templatesFS embed.FS
 var stylesCSS template.CSS
 
 //go:embed static/alpine.js
+var alpineJS template.JS
 
-var templates *template.Template
+//go:embed static/app.js
+var appJS template.JS
 
 func init() {
-	templates = template.Must(template.ParseFS(templatesFS, "templates/*.html"))
+	initTemplates(templatesFS)
 }
 
 func main() {
-	pageData := models.PageData{
-		Title:     "",
-		StylesCSS: stylesCSS,
-	}
 	port := flag.String("port", "8080", "The port to start fluxus on")
 	flag.Parse()
 	r := chi.NewRouter()
@@ -43,7 +40,7 @@ func main() {
 		panic(err)
 	}
 
-	handler := handler.NewHandler(conn, templates, pageData)
+	handler := handler.NewHandler(conn)
 	handler.RegisterRoutes(r)
 	server := http.Server{
 		Addr:    ":" + *port,

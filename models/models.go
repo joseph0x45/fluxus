@@ -4,6 +4,7 @@ import "html/template"
 
 type PageData struct {
 	StylesCSS template.CSS
+	AlpineJS template.JS
 	Title     string
 }
 

@@ -2,26 +2,18 @@ package handler
 
 import (
 	"fluxus/db"
-	"fluxus/models"
-	"html/template"
 
 	"github.com/go-chi/chi/v5"
 )
 
 type Handler struct {
-	conn      *db.Conn
-	templates *template.Template
-	pageData  models.PageData
+	conn *db.Conn
 }
 
 func NewHandler(
-	conn *db.Conn, templates *template.Template,
-	pageData models.PageData,
-) *Handler {
+	conn *db.Conn) *Handler {
 	return &Handler{
-		conn:      conn,
-		templates: templates,
-		pageData: pageData,
+		conn: conn,
 	}
 }
 
