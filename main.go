@@ -8,6 +8,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -33,10 +34,11 @@ func init() {
 
 func main() {
 	port := flag.String("port", "8080", "The port to start fluxus on")
+	resetDB := flag.Bool("reset-db", false, "Reset the database")
 	flag.Parse()
 	r := chi.NewRouter()
 
-	conn, err := db.GetConn()
+	conn, err := db.GetConn(*resetDB)
 	if err != nil {
 		panic(err)
 	}
@@ -45,7 +47,7 @@ func main() {
 
 	r.HandleFunc("GET /static/*", http.FileServer(http.FS(staticFS)).ServeHTTP)
 
-	handler := handler.NewHandler(conn, templates)
+	handler := handler.NewHandler(conn, templates, os.Getenv("ENV"))
 	handler.RegisterRoutes(r)
 	server := http.Server{
 		Addr:    ":" + *port,

@@ -47,11 +47,16 @@ const DB_SCHEMA = `
 
 	create table if not exists sessions (
 		id text not null primary key,
-		session_id_user text not null references users(id)
+		session_user text not null references users(id)
 	);
 `
 
-func GetConn() (*Conn, error) {
+func GetConn(resetDB bool) (*Conn, error) {
+	if resetDB {
+		if err := os.Remove(GetDatabaseFilePath()); err != nil {
+			panic(err)
+		}
+	}
 	if err := EnsureDataDir(); err != nil {
 		return nil, fmt.Errorf("Setup failed: %w", err)
 	}

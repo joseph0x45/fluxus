@@ -1,10 +1,12 @@
 package handler
 
 import (
+	"context"
 	"fluxus/logger"
 	"fluxus/models"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/oklog/ulid/v2"
 	"golang.org/x/crypto/bcrypt"
@@ -31,6 +33,11 @@ func passwordMatchesHash(pwd, hash string) bool {
 }
 
 func (h *Handler) HandleAuthentication(w http.ResponseWriter, r *http.Request) {
+	userID := ""
+	if err := r.ParseForm(); err != nil {
+		w.Write([]byte("An error occurred. Please try again"))
+		return
+	}
 	username, password := r.Form.Get("username"), r.Form.Get("password")
 	if len(password) >= 76 {
 		w.Write([]byte("Password too long"))
@@ -60,13 +67,60 @@ func (h *Handler) HandleAuthentication(w http.ResponseWriter, r *http.Request) {
 			logger.Err(err.Error())
 			w.Write([]byte("An error occurred. Please try again"))
 		}
-		newSession := &models.Session{
-			ID: "",
+		userID = newUser.ID
+	} else {
+		if !passwordMatchesHash(password, existingUser.Password) {
+			w.Write([]byte("This Username is already taken"))
+			return
 		}
-		return
+		userID = existingUser.ID
 	}
-	if !passwordMatchesHash(password, existingUser.Password) {
-		w.Write([]byte("This Username is already taken"))
-		return
+	newSession := &models.Session{
+		ID:          ulid.Make().String(),
+		SessionUser: userID,
 	}
+	if err := h.conn.InsertSession(newSession); err != nil {
+		logger.Err(err.Error())
+		w.Write([]byte("An error occurred. Please try again"))
+	}
+	cookie := &http.Cookie{
+		Name:     "session",
+		Value:    newSession.ID,
+		Path:     "/",
+		HttpOnly: false,
+		Expires:  time.Now().AddDate(10, 0, 0),
+		Secure:   false,
+		SameSite: http.SameSiteLaxMode,
+	}
+	http.SetCookie(w, cookie)
+	w.Header().Set("HX-Redirect", "/")
+}
+
+func (h *Handler) AuthMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		sessionCookie, err := r.Cookie("session")
+		if err != nil {
+			logger.Err("Failed to get cookie: ", err.Error())
+			http.Redirect(w, r, "/auth", http.StatusSeeOther)
+			return
+		}
+		session, err := h.conn.GetSession(sessionCookie.Value)
+		if err != nil {
+			logger.Err(err.Error())
+			http.Redirect(w, r, "/auth", http.StatusSeeOther)
+			return
+		}
+		user, err := h.conn.GetUser("id", session.SessionUser)
+		if err != nil {
+			logger.Err(err.Error())
+			http.Redirect(w, r, "/auth", http.StatusSeeOther)
+			return
+		}
+		if user == nil {
+			http.Redirect(w, r, "/auth", http.StatusSeeOther)
+			return
+		}
+		ctx := context.WithValue(r.Context(), "user", user)
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
 }

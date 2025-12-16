@@ -13,9 +13,9 @@ func (c *Conn) GetUser(by, value string) (*models.User, error) {
 	var err error
 	user := &models.User{}
 	if by == "id" {
-		err = c.db.Get(user, get_by_id_query)
+		err = c.db.Get(user, get_by_id_query, value)
 	} else {
-		err = c.db.Get(user, get_by_username_query)
+		err = c.db.Get(user, get_by_username_query, value)
 	}
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {

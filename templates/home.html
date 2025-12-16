@@ -1,8 +1,14 @@
-{{template "layout" .}}
+{{define "home"}}
+<!DOCTYPE html>
+<html lang="en">
 
-{{define "content"}}
-<h2>Welcome to the homepage!</h2>
-<h2></h2>
-<p>Hello, {{.User}}</p>
-<i></i>
+<head>
+  {{template "head" .}}
+</head>
+
+<body>
+  <h1>Hello, {{.Payload.User.Username}}</h1>
+</body>
+
+</html>
 {{end}}

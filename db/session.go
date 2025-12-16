@@ -10,10 +10,10 @@ import (
 func (c *Conn) InsertSession(session *models.Session) error {
 	const query = `
 		insert into sessions (
-			id, session_id_user
+			id, session_user
 		)
 		values (
-			:id, :session_id_user
+			:id, :session_user
 		);
 	`
 	_, err := c.db.NamedExec(query, session)
