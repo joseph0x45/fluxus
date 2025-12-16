@@ -1,11 +1,8 @@
 package models
 
-import "html/template"
-
 type PageData struct {
-	StylesCSS template.CSS
-	AlpineJS template.JS
-	Title     string
+	Title   string
+	Payload map[string]any
 }
 
 type User struct {

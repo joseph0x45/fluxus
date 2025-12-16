@@ -10,6 +10,7 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 )
 
 //go:generate tailwindcss -i static/input.css -o static/styles.css -m
@@ -40,13 +41,11 @@ func main() {
 		panic(err)
 	}
 
+	r.Use(middleware.StripSlashes)
+
 	r.HandleFunc("GET /static/*", http.FileServer(http.FS(staticFS)).ServeHTTP)
 
-	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		templates.ExecuteTemplate(w, "home", nil)
-	})
-
-	handler := handler.NewHandler(conn)
+	handler := handler.NewHandler(conn, templates)
 	handler.RegisterRoutes(r)
 	server := http.Server{
 		Addr:    ":" + *port,
