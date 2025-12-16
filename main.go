@@ -17,17 +17,17 @@ import (
 //go:embed templates/*html
 var templatesFS embed.FS
 
-//go:embed static/styles.css
-var stylesCSS template.CSS
+//go:embed static/*
+var staticFS embed.FS
 
-//go:embed static/alpine.js
-var alpineJS template.JS
-
-//go:embed static/app.js
-var appJS template.JS
+var templates *template.Template
 
 func init() {
-	initTemplates(templatesFS)
+	var err error
+	templates, err = template.ParseFS(templatesFS, "templates/*.html")
+	if err != nil {
+		panic(err)
+	}
 }
 
 func main() {
@@ -39,6 +39,12 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
+	r.HandleFunc("GET /static/*", http.FileServer(http.FS(staticFS)).ServeHTTP)
+
+	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+		templates.ExecuteTemplate(w, "home", nil)
+	})
 
 	handler := handler.NewHandler(conn)
 	handler.RegisterRoutes(r)

@@ -1,4 +1,4 @@
 fluxus
 *_templ.go
 static/styles.css
-static/alpine.js
+static/*.js
