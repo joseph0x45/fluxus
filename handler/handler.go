@@ -24,4 +24,5 @@ func NewHandler(
 
 func (h *Handler) RegisterRoutes(r chi.Router) {
 	r.Get("/auth", h.RenderAuthPage)
+	r.Post("/api/authenticate", h.HandleAuthentication)
 }
