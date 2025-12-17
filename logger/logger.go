@@ -3,7 +3,7 @@ package logger
 import "log"
 
 func _log(level string, msg ...any) {
-	args := append(msg, level)
+	args := append([]any{level}, msg...)
 	log.Println(args...)
 }
 
