@@ -10,46 +10,9 @@
 
   <!-- Header -->
   {{template "header"}}
-
-
-  <!-- Safe mode -->
-  <section class="p-4">
-    <div class="bg-white rounded-lg shadow p-4 flex items-center justify-between">
-      <span class="text-gray-700 font-medium"> Safe Mode</span>
-      {{ template "safe_mode_toggle" .Payload.User}}
-    </div>
-  </section>
-
-  <!-- Navigation cards -->
-  <section class="p-4">
-    <div class="grid grid-cols-2 gap-4">
-
-      <a hx-get="/accounts" hx-target="#content"
-        class="bg-white rounded-lg shadow p-6 flex flex-col items-center justify-center text-center hover:bg-gray-100 transition">
-        <span class="text-xl font-bold mb-2">Accounts</span>
-        <span class="text-gray-500 text-sm">Manage accounts</span>
-      </a>
-
-      <a hx-get="/transactions" hx-target="#content"
-        class="bg-white rounded-lg shadow p-6 flex flex-col items-center justify-center text-center hover:bg-gray-100 transition">
-        <span class="text-xl font-bold mb-2">Transactions</span>
-        <span class="text-gray-500 text-sm">Track your transactions</span>
-      </a>
-
-      <a hx-get="/buckets" hx-target="#content"
-        class="bg-white rounded-lg shadow p-6 flex flex-col items-center justify-center text-center hover:bg-gray-100 transition">
-        <span class="text-xl font-bold mb-2">Buckets</span>
-        <span class="text-gray-500 text-sm">Savings and goals</span>
-      </a>
-
-      <a hx-get="/tags" hx-target="#content"
-        class="bg-white rounded-lg shadow p-6 flex flex-col items-center justify-center text-center hover:bg-gray-100 transition">
-        <span class="text-xl font-bold mb-2">Tags</span>
-        <span class="text-gray-500 text-sm">Organize your transactions</span>
-      </a>
-
-    </div>
-  </section>
+  <main>
+    <h1>Hello from accounts</h1>
+  </main>
   {{template "bottom_navigation" .}}
 
 </body>
