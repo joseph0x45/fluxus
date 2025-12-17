@@ -12,9 +12,9 @@ func Info(msg ...any) {
 }
 
 func Warn(msg ...any) {
-	_log("[INFO]", msg...)
+	_log("[WARN]", msg...)
 }
 
 func Err(msg ...any) {
-	_log("[INFO]", msg...)
+	_log("[ERR]", msg...)
 }

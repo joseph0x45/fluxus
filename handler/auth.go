@@ -100,7 +100,6 @@ func (h *Handler) AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		sessionCookie, err := r.Cookie("session")
 		if err != nil {
-			logger.Err("Failed to get cookie: ", err.Error())
 			http.Redirect(w, r, "/auth", http.StatusSeeOther)
 			return
 		}
