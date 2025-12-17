@@ -41,3 +41,14 @@ func (c *Conn) InsertUser(user *models.User) error {
 	}
 	return nil
 }
+
+func (c *Conn) ToggleUserSafeMode(user *models.User) error {
+	newSafeMode := !user.SafeMode
+	const query = "update users set safe_mode=? where id=?"
+	_, err := c.db.Exec(query, newSafeMode, user.ID)
+	if err != nil {
+		return fmt.Errorf("Failed to toggle safe mode: %w", err)
+	}
+	user.SafeMode = newSafeMode
+	return nil
+}

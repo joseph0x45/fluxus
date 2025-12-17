@@ -8,11 +8,12 @@ import (
 	"html/template"
 	"log"
 	"net/http"
-	"os"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 )
+
+var mode = "debug"
 
 //go:generate tailwindcss -i static/input.css -o static/styles.css -m
 
@@ -47,7 +48,7 @@ func main() {
 
 	r.HandleFunc("GET /static/*", http.FileServer(http.FS(staticFS)).ServeHTTP)
 
-	handler := handler.NewHandler(conn, templates, os.Getenv("ENV"))
+	handler := handler.NewHandler(conn, templates, mode)
 	handler.RegisterRoutes(r)
 	server := http.Server{
 		Addr:    ":" + *port,

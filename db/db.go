@@ -42,13 +42,23 @@ const DB_SCHEMA = `
 	create table if not exists users (
 		id text not null primary key,
 		username text not null unique,
-		password text not null
+		password text not null,
+		safe_mode integer not null default 0
 	);
 
 	create table if not exists sessions (
 		id text not null primary key,
 		session_user text not null references users(id)
 	);
+
+	create table if not exists accounts (
+		id text not null primary key,
+		name text not null,
+		balance integer not null,
+		owner text not null references users(id),
+		unique(name, owner)
+	);
+
 `
 
 func GetConn(resetDB bool) (*Conn, error) {

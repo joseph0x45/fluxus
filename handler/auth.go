@@ -87,9 +87,9 @@ func (h *Handler) HandleAuthentication(w http.ResponseWriter, r *http.Request) {
 		Name:     "session",
 		Value:    newSession.ID,
 		Path:     "/",
-		HttpOnly: false,
+		HttpOnly: h.InReleaseMode(),
 		Expires:  time.Now().AddDate(10, 0, 0),
-		Secure:   false,
+		Secure:   h.InReleaseMode(),
 		SameSite: http.SameSiteLaxMode,
 	}
 	http.SetCookie(w, cookie)
@@ -107,6 +107,10 @@ func (h *Handler) AuthMiddleware(next http.Handler) http.Handler {
 		session, err := h.conn.GetSession(sessionCookie.Value)
 		if err != nil {
 			logger.Err(err.Error())
+			http.Redirect(w, r, "/auth", http.StatusSeeOther)
+			return
+		}
+		if session == nil {
 			http.Redirect(w, r, "/auth", http.StatusSeeOther)
 			return
 		}

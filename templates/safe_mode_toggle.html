@@ -1,0 +1,6 @@
+{{ define "safe_mode_toggle" }}
+<button id="safeModeToggle" hx-post="/toggle-safe-mode" hx-target="#safeModeToggle" hx-swap="outerHTML"
+  class="{{ if .SafeMode }}bg-blue-200{{ else }}bg-gray-200{{ end }} rounded-full px-4 py-2 text-gray-800 hover:bg-gray-300 transition">
+  {{ if .SafeMode }}ON{{ else }}OFF{{ end }}
+</button>
+{{ end }}

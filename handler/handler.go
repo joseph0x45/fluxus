@@ -12,23 +12,23 @@ import (
 type Handler struct {
 	conn      *db.Conn
 	templates *template.Template
-	env       string
+	mode      string
 }
 
 func NewHandler(
 	conn *db.Conn,
 	templates *template.Template,
-	env string,
+	mode string,
 ) *Handler {
 	return &Handler{
 		conn:      conn,
 		templates: templates,
-		env:       env,
+		mode:      mode,
 	}
 }
 
-func (h *Handler) InDevMode() bool {
-	return h.env == ""
+func (h *Handler) InReleaseMode() bool {
+	return h.mode == "debug"
 }
 
 func (h *Handler) RegisterRoutes(r chi.Router) {
@@ -36,13 +36,22 @@ func (h *Handler) RegisterRoutes(r chi.Router) {
 	r.Post("/api/authenticate", h.HandleAuthentication)
 	r.With(h.AuthMiddleware).Group(func(r chi.Router) {
 		r.Get("/", h.RenderHomePage)
+		r.Post("/toggle-safe-mode", h.ToggleSafeMode)
 	})
 }
 
-func (h *Handler) RenderHomePage(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) getCurrentUser(w http.ResponseWriter, r *http.Request) *models.User {
 	currentUser, ok := r.Context().Value("user").(*models.User)
 	if !ok {
 		http.Redirect(w, r, "/auth", http.StatusSeeOther)
+		return nil
+	}
+	return currentUser
+}
+
+func (h *Handler) RenderHomePage(w http.ResponseWriter, r *http.Request) {
+	currentUser := h.getCurrentUser(w, r)
+	if currentUser == nil {
 		return
 	}
 	pageData := models.PageData{
