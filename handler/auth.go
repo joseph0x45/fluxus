@@ -96,6 +96,26 @@ func (h *Handler) HandleAuthentication(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("HX-Redirect", "/")
 }
 
+func (h *Handler) Logout(w http.ResponseWriter, r *http.Request) {
+	sessionCookie, _ := r.Cookie("session")
+	if sessionCookie != nil {
+		if err := h.conn.DeleteSession(sessionCookie.Value); err != nil {
+			logger.Err(err.Error())
+		}
+	}
+	cookie := &http.Cookie{
+		Name:     "session",
+		Value:    "",
+		Path:     "/",
+		HttpOnly: h.InReleaseMode(),
+		MaxAge:   -1,
+		Secure:   h.InReleaseMode(),
+		SameSite: http.SameSiteLaxMode,
+	}
+	http.SetCookie(w, cookie)
+	w.Header().Set("HX-Redirect", "/auth")
+}
+
 func (h *Handler) AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		sessionCookie, err := r.Cookie("session")

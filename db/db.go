@@ -59,6 +59,13 @@ const DB_SCHEMA = `
 		unique(name, owner)
 	);
 
+	create table if not exists tags (
+		id text not null primary key,
+		name text not null,
+		owner text not null references users(id),
+		unique(name, owner)
+	);
+
 `
 
 func GetConn(resetDB bool) (*Conn, error) {

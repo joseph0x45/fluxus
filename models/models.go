@@ -1,8 +1,9 @@
 package models
 
 type PageData struct {
-	Title   string
-	Payload map[string]any
+	Title      string
+	ActivePage string
+	Payload    map[string]any
 }
 
 type User struct {
@@ -25,6 +26,7 @@ type Account struct {
 }
 
 type Tag struct {
-	ID   string `json:"id" db:"id"`
-	Name string `json:"name" db:"name"`
+	ID    string `json:"id" db:"id"`
+	Name  string `json:"name" db:"name"`
+	Owner string `json:"owner" db:"owner"`
 }

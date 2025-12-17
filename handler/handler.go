@@ -5,8 +5,6 @@ import (
 	"fluxus/models"
 	"html/template"
 	"net/http"
-
-	"github.com/go-chi/chi/v5"
 )
 
 type Handler struct {
@@ -31,15 +29,6 @@ func (h *Handler) InReleaseMode() bool {
 	return h.mode == "debug"
 }
 
-func (h *Handler) RegisterRoutes(r chi.Router) {
-	r.Get("/auth", h.RenderAuthPage)
-	r.Post("/api/authenticate", h.HandleAuthentication)
-	r.With(h.AuthMiddleware).Group(func(r chi.Router) {
-		r.Get("/", h.RenderHomePage)
-		r.Post("/toggle-safe-mode", h.ToggleSafeMode)
-	})
-}
-
 func (h *Handler) getCurrentUser(w http.ResponseWriter, r *http.Request) *models.User {
 	currentUser, ok := r.Context().Value("user").(*models.User)
 	if !ok {
@@ -49,18 +38,23 @@ func (h *Handler) getCurrentUser(w http.ResponseWriter, r *http.Request) *models
 	return currentUser
 }
 
-func (h *Handler) RenderHomePage(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) RedirectToAccountsPage(w http.ResponseWriter, r *http.Request) {
+	http.Redirect(w, r, "/accounts", http.StatusSeeOther)
+}
+
+func (h *Handler) RenderAccountsPage(w http.ResponseWriter, r *http.Request) {
 	currentUser := h.getCurrentUser(w, r)
 	if currentUser == nil {
 		return
 	}
 	pageData := models.PageData{
-		Title: "Fluxus | Home",
+		Title:      "Fluxus | Accounts",
+		ActivePage: "accounts",
 		Payload: map[string]any{
 			"User": currentUser,
 		},
 	}
-	if err := h.templates.ExecuteTemplate(w, "home", pageData); err != nil {
+	if err := h.templates.ExecuteTemplate(w, "accounts", pageData); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }
