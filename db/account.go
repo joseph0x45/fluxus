@@ -51,7 +51,7 @@ func (c *Conn) RenameAccount(id, newName string) error {
 	`
 	_, err := c.db.Exec(query, newName, id)
 	if err != nil {
-		return fmt.Errorf("Failed to update account %d name: %w", id, err)
+		return fmt.Errorf("Failed to update account %s name: %w", id, err)
 	}
 	return nil
 }

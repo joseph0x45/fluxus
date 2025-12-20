@@ -25,3 +25,5 @@ func (h *Handler) RenderAccountsPage(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }
+
+func (h *Handler) CreateAccount(w http.ResponseWriter, r *http.Request) {}
