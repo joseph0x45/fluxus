@@ -7,11 +7,26 @@
 </head>
 
 <body class="bg-gray-50 min-h-screen font-sans">
-  <!-- Header -->
   {{template "header"}}
   <main class="flex-1 p-4 space-y-6">
     <h1 class="text-xl font-semibold text-gray-800">Tags</h1>
-
+    <form hx-on::after-request="this.reset()" hx-post="/tags" hx-target="#tags-list" hx-swap="afterbegin"
+      hx-on::response-error="document.getElementById('tag-error').innerHTML = event.detail.xhr.responseText"
+      class="flex gap-2">
+      <input autocomplete="off" type="text" name="name" placeholder="New tag" required
+        class="flex-1 border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+      <button type="submit" class="px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-medium">
+        Add
+      </button>
+    </form>
+    <div id="tag-error" class="text-sm text-red-600"></div>
+    <div id="tags-list" class="space-y-2">
+      {{ range .Payload.Tags }}
+      {{ template "tag" . }}
+      {{ else }}
+      <p class="text-sm text-gray-500">No tags yet.</p>
+      {{ end }}
+    </div>
   </main>
   {{template "bottom_navigation" .}}
 </body>

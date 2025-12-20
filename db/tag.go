@@ -1,32 +1,38 @@
 package db
 
 import (
+	"fluxus/logger"
 	"fluxus/models"
 	"fmt"
 )
 
-func (c *Conn) InsertTag(tag *models.Tag) error {
+func (c *Conn) InsertTag(tag *models.Tag) (int, error) {
 	const query = `
 		insert or ignore into tags (
-			id, name
+			id, name, owner
 		)
 		values (
-			:id, :name
+			:id, :name, :owner
 		)
 	`
-	_, err := c.db.NamedExec(query, tag)
+	res, err := c.db.NamedExec(query, tag)
 	if err != nil {
-		return fmt.Errorf("Failed to insert tag: %w", err)
+		return -1, fmt.Errorf("Failed to insert tag: %w", err)
 	}
-	return nil
+	inserted, err := res.RowsAffected()
+	if err != nil {
+		logger.Err("Error getting affected rows")
+		return 0, nil
+	}
+	return int(inserted), nil
 }
 
-func (c *Conn) GetAllTags() ([]models.Tag, error) {
+func (c *Conn) GetUserTags(owner string) ([]models.Tag, error) {
 	tags := make([]models.Tag, 0)
-	const query = "select * from tags"
-	err := c.db.Select(tags, query)
+	const query = "select * from tags where owner=?"
+	err := c.db.Select(&tags, query, owner)
 	if err != nil {
-		return nil, fmt.Errorf("Failed to get all tags: %w", err)
+		return nil, fmt.Errorf("Failed to get tags for user %s: %w", owner, err)
 	}
 	return tags, nil
 }

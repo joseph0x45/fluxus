@@ -14,5 +14,7 @@ func (h *Handler) RegisterRoutes(r chi.Router) {
 		r.Get("/tags", h.RenderTagsPage)
 		r.Get("/settings", h.RenderSettingsPage)
 		r.Get("/buckets", h.RenderBucketsPage)
+
+		r.Post("/tags", h.CreateTag)
 	})
 }
