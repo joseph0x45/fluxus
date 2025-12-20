@@ -12,6 +12,7 @@ func (h *Handler) RenderTagsPage(w http.ResponseWriter, r *http.Request) {
 	}
 	pageData := models.PageData{
 		ActivePage: "tags",
+		Title:      "Fluxus | Tags",
 		Payload: map[string]any{
 			"User": currentUser,
 			"Tags": []models.Tag{},

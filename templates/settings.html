@@ -9,8 +9,25 @@
 <body class="bg-gray-50 min-h-screen font-sans">
   <!-- Header -->
   {{template "header"}}
-  <main>
-    <h1>Hello from settings page</h1>
+  <main class="flex-1 p-4 space-y-6">
+    <h1 class="text-xl font-semibold text-gray-800">Settings</h1>
+
+    <!-- Safe Mode -->
+    <section class="bg-white rounded-xl shadow p-4 flex items-center justify-between">
+      <div>
+        <p class="font-medium text-gray-800">Safe mode</p>
+        <p class="text-sm text-gray-500">
+          Hide real balances and amounts
+        </p>
+      </div>
+      {{ template "safe_mode_toggle" .Payload.User }}
+    </section>
+
+    <!-- Future settings -->
+    <section class="bg-white rounded-xl shadow p-4 text-gray-500 text-sm">
+      More settings coming soon.
+    </section>
+
   </main>
   {{template "bottom_navigation" .}}
 </body>

@@ -12,6 +12,7 @@ func (h *Handler) RenderBucketsPage(w http.ResponseWriter, r *http.Request) {
 	}
 	pageData := models.PageData{
 		ActivePage: "buckets",
+		Title:      "Fluxus | Buckets",
 		Payload: map[string]any{
 			"User":    currentUser,
 			"Buckets": []models.Tag{},
