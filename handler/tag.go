@@ -66,3 +66,21 @@ func (h *Handler) CreateTag(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 }
+
+func (h *Handler) DeleteTag(w http.ResponseWriter, r *http.Request) {
+	currentUser := h.getCurrentUser(w, r)
+	if currentUser == nil {
+		return
+	}
+	tagID := r.PathValue("id")
+	if tagID == "" {
+		return
+	}
+	err := h.conn.DeleteTag(tagID, currentUser.ID)
+	if err != nil {
+		logger.Err(err.Error())
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("Something went wrong! Try again"))
+		return
+	}
+}

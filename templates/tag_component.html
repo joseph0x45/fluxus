@@ -1,7 +1,12 @@
-{{ define "tag"}}
+{{ define "tag" }}
 <div class="bg-white rounded-lg shadow px-4 py-3 flex items-center justify-between">
   <span class="text-sm font-medium text-gray-800">
     {{ .Name }}
   </span>
+
+  <button hx-delete="/tags/{{ .ID }}" hx-target="closest div" hx-swap="outerHTML"
+    class="text-red-500 hover:text-red-700 text-sm">
+    Delete
+  </button>
 </div>
 {{ end }}

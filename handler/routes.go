@@ -16,5 +16,6 @@ func (h *Handler) RegisterRoutes(r chi.Router) {
 		r.Get("/buckets", h.RenderBucketsPage)
 
 		r.Post("/tags", h.CreateTag)
+		r.Delete("/tags/{id}", h.DeleteTag)
 	})
 }

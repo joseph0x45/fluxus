@@ -37,6 +37,11 @@ func (c *Conn) GetUserTags(owner string) ([]models.Tag, error) {
 	return tags, nil
 }
 
-func (c *Conn) DeleteTag(id string) error {
+func (c *Conn) DeleteTag(tagID, owner string) error {
+	const query = "delete from tags where id=? and owner=?"
+	_, err := c.db.Exec(query, tagID, owner)
+	if err != nil {
+		return fmt.Errorf("Failed to delete tag with id %s", tagID)
+	}
 	return nil
 }
