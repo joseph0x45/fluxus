@@ -43,11 +43,12 @@ func (h *Handler) CreateTag(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	tagName := r.FormValue("name")
-	inserted, err := h.conn.InsertTag(&models.Tag{
+	newTag := &models.Tag{
 		ID:    ulid.Make().String(),
 		Name:  tagName,
 		Owner: currentUser.ID,
-	})
+	}
+	inserted, err := h.conn.InsertTag(newTag)
 	if err != nil {
 		logger.Err(err.Error())
 		w.WriteHeader(http.StatusInternalServerError)
@@ -58,6 +59,7 @@ func (h *Handler) CreateTag(w http.ResponseWriter, r *http.Request) {
 	if inserted > 0 {
 		if err := h.templates.ExecuteTemplate(w, "tag", map[string]string{
 			"Name": tagName,
+			"ID":   newTag.ID,
 		}); err != nil {
 			logger.Err(err.Error())
 			w.WriteHeader(http.StatusInternalServerError)

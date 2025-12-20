@@ -23,8 +23,6 @@
     <div id="tags-list" class="space-y-2">
       {{ range .Payload.Tags }}
       {{ template "tag" . }}
-      {{ else }}
-      <p class="text-sm text-gray-500">No tags yet.</p>
       {{ end }}
     </div>
   </main>
