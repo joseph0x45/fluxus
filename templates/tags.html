@@ -13,7 +13,7 @@
     <form hx-on::after-request="this.reset()" hx-post="/tags" hx-target="#tags-list" hx-swap="afterbegin"
       hx-on::response-error="document.getElementById('tag-error').innerHTML = event.detail.xhr.responseText"
       class="flex gap-2">
-      <input autocomplete="off" type="text" name="name" placeholder="New tag" required
+      <input autocomplete="off" type="text" name="name" required autofocus
         class="flex-1 border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
       <button type="submit" class="px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-medium">
         Add
